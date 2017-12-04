@@ -72,7 +72,8 @@
   */
 
 enum { MACRO_VERSION_INFO,
-       MACRO_ANY
+       MACRO_ANY,
+       MACRO_TOGGLE_QUKEYS
      };
 
 
@@ -135,7 +136,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
 
-   M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         Key_KeypadNumLock,
+   M(MACRO_TOGGLE_QUKEYS),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         Key_KeypadNumLock,
    Key_RightAlt,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
    Key_Enter,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
@@ -229,6 +230,11 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   case MACRO_ANY:
     anyKeyMacro(keyState);
     break;
+
+  case MACRO_TOGGLE_QUKEYS:
+      if (keyToggledOn(keyState))
+          Qukeys.toggle();
+      break;    
   }
   return MACRO_NONE;
 }
@@ -308,7 +314,9 @@ void setup() {
     &Macros,
 
     // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
-    &MouseKeys
+    &MouseKeys,
+
+    &Qukeys
   );
 
   // While we hope to improve this in the future, the NumLock plugin
@@ -332,6 +340,17 @@ void setup() {
   // This avoids over-taxing devices that don't have a lot of power to share
   // with USB devices
   LEDOff.activate();
+
+  QUKEYS(
+         kaleidoscope::Qukey(0, 2, 1, Key_LeftShift),      // A/shift
+         kaleidoscope::Qukey(0, 2, 2, Key_LeftControl),    // S/control
+         kaleidoscope::Qukey(0, 2, 3, Key_LeftAlt),        // D/alt
+         kaleidoscope::Qukey(0, 2, 14, Key_LeftShift),     // ;/shift
+         kaleidoscope::Qukey(0, 2, 13, Key_LeftControl),   // l/control
+         kaleidoscope::Qukey(0, 2, 12, Key_LeftAlt)        // k/alt
+         )
+      Qukeys.setTimeout(200);
+  
 }
 
 /** loop is the second of the standard Arduino sketch functions.
