@@ -1,6 +1,7 @@
 # This stub makefile for a Kaleidoscope plugin pulls in 
 # all targets from the Kaleidoscope-Plugin library
 
+export ARDUINO_PATH = /home/tws/hacking/arduino-1.8.2/
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
