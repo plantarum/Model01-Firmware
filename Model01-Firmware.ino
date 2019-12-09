@@ -3,7 +3,7 @@
 // See "LICENSE" for license details
 
 #ifndef BUILD_INFORMATION
-#define BUILD_INFORMATION "locally built"
+#define BUILD_INFORMATION "Tyler custom"
 #endif
 
 
@@ -31,6 +31,11 @@
 
 // Support for controlling the keyboard's LEDs
 #include "Kaleidoscope-LEDControl.h"
+
+// Tyler's additions:
+#include "Kaleidoscope-LED-ActiveModColor.h"
+#include <Kaleidoscope-OneShot.h>
+
 
 // Support for "Numpad" mode, which is mostly just the Numpad specific LED mode
 #include "Kaleidoscope-NumPad.h"
@@ -177,16 +182,16 @@ KEYMAPS(
   (___,          Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
    Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
    Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
-   Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
-   Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
-   ShiftToLayer(FUNCTION),
+   OSM(LeftGui), Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
+   OSM(LeftControl), Key_Backspace, OSM(LeftAlt), OSM(LeftShift),
+   OSL(FUNCTION),
 
    M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         LockLayer(NUMPAD),
    Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
-   Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
-   Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
-   ShiftToLayer(FUNCTION)),
+   OSL(FUNCTION),  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
+   OSM(RightShift), OSM(LeftAlt), Key_Spacebar, OSM(RightControl),
+   OSL(FUNCTION)),
 
 #elif defined (PRIMARY_KEYMAP_DVORAK)
 
@@ -465,25 +470,28 @@ KALEIDOSCOPE_INIT_PLUGINS(
 
   // The rainbow effect changes the color of all of the keyboard's keys at the same time
   // running through all the colors of the rainbow.
-  LEDRainbowEffect,
+  //LEDRainbowEffect,
 
   // The rainbow wave effect lights up your keyboard with all the colors of a rainbow
   // and slowly moves the rainbow across your keyboard
-  LEDRainbowWaveEffect,
+  //LEDRainbowWaveEffect,
 
   // The chase effect follows the adventure of a blue pixel which chases a red pixel across
   // your keyboard. Spoiler: the blue pixel never catches the red pixel
-  LEDChaseEffect,
+  //LEDChaseEffect,
 
   // These static effects turn your keyboard's LEDs a variety of colors
-  solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
+  //solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
 
   // The breathe effect slowly pulses all of the LEDs on your keyboard
-  LEDBreatheEffect,
+  //LEDBreatheEffect,
 
   // The AlphaSquare effect prints each character you type, using your
   // keyboard's LEDs as a display
-  AlphaSquareEffect,
+  //AlphaSquareEffect,
+
+  // LED-ActiveModColor
+  ActiveModColorEffect,
 
   // The stalker effect lights up the keys you've pressed recently
   StalkerEffect,
@@ -499,6 +507,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
   // with a custom LED effect
   NumPad,
 
+  OneShot,
   // The macros plugin adds support for macros
   Macros,
 
