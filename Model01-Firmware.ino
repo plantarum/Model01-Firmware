@@ -110,10 +110,10 @@ enum { MACRO_VERSION_INFO,
   * defined as part of the USB HID Keyboard specification. You can find the names
   * (if not yet the explanations) for all the standard `Key_` defintions offered by
   * Kaleidoscope in these files:
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keyboard.h
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_consumerctl.h
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_sysctl.h
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keymaps.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_keyboard.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_consumerctl.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_sysctl.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_keymaps.h
   *
   * Additional things that should be documented here include
   *   using ___ to let keypresses fall through to the previously active layer
@@ -164,8 +164,8 @@ enum { PRIMARY, NUMPAD, FUNCTION }; // layers
   */
 
 #define PRIMARY_KEYMAP_QWERTY
-// #define PRIMARY_KEYMAP_COLEMAK
 // #define PRIMARY_KEYMAP_DVORAK
+// #define PRIMARY_KEYMAP_COLEMAK
 // #define PRIMARY_KEYMAP_CUSTOM
 
 
@@ -291,8 +291,8 @@ KEYMAPS(
  *  prints out the firmware build information as virtual keystrokes
  */
 
-static void versionInfoMacro(uint8_t keyState) {
-  if (keyToggledOn(keyState)) {
+static void versionInfoMacro(uint8_t key_state) {
+  if (keyToggledOn(key_state)) {
     Macros.type(PSTR("Keyboardio Model 01 - Kaleidoscope "));
     Macros.type(PSTR(BUILD_INFORMATION));
   }
@@ -306,16 +306,11 @@ static void versionInfoMacro(uint8_t keyState) {
  *
  */
 
-static void anyKeyMacro(uint8_t keyState) {
-  static Key lastKey;
-  bool toggledOn = false;
-  if (keyToggledOn(keyState)) {
-    lastKey.keyCode = Key_A.keyCode + (uint8_t)(millis() % 36);
-    toggledOn = true;
+static void anyKeyMacro(KeyEvent &event) {
+  if (keyToggledOn(event.state)) {
+    event.key.setKeyCode(Key_A.getKeyCode() + (uint8_t)(millis() % 36));
+    event.key.setFlags(0);
   }
-
-  if (keyIsPressed(keyState))
-    kaleidoscope::hid::pressKey(lastKey, toggledOn);
 }
 
 
@@ -331,15 +326,15 @@ static void anyKeyMacro(uint8_t keyState) {
 
  */
 
-const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
-  switch (macroIndex) {
+const macro_t *macroAction(uint8_t macro_id, KeyEvent &event) {
+  switch (macro_id) {
 
   case MACRO_VERSION_INFO:
-    versionInfoMacro(keyState);
+    versionInfoMacro(event.state);
     break;
 
   case MACRO_ANY:
-    anyKeyMacro(keyState);
+    anyKeyMacro(event);
     break;
   }
   return MACRO_NONE;
@@ -366,13 +361,10 @@ static kaleidoscope::plugin::LEDSolidColor solidViolet(130, 0, 120);
 void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event event) {
   switch (event) {
   case kaleidoscope::plugin::HostPowerManagement::Suspend:
-    LEDControl.set_all_leds_to({0, 0, 0});
-    LEDControl.syncLeds();
-    LEDControl.paused = true;
+    LEDControl.disable();
     break;
   case kaleidoscope::plugin::HostPowerManagement::Resume:
-    LEDControl.paused = false;
-    LEDControl.refreshAll();
+    LEDControl.enable();
     break;
   case kaleidoscope::plugin::HostPowerManagement::Sleep:
     break;
@@ -555,7 +547,7 @@ void setup() {
 
   // The LED Stalker mode has a few effects. The one we like is called
   // 'BlazingTrail'. For details on other options, see
-  // https://github.com/keyboardio/Kaleidoscope/blob/master/doc/plugin/LED-Stalker.md
+  // https://github.com/keyboardio/Kaleidoscope/blob/master/docs/plugins/LED-Stalker.md
   StalkerEffect.variant = STALKER(BlazingTrail);
 
   // We want to make sure that the firmware starts with LED effects off
